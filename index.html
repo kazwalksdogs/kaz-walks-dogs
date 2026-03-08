@@ -209,6 +209,33 @@
   #install-btn { background:var(--tan); color:var(--dark); border:none; padding:6px 14px; border-radius:100px; font-weight:600; cursor:pointer; font-size:0.8rem; }
   #dismiss-banner { background:transparent; border:none; color:rgba(245,239,224,0.35); cursor:pointer; font-size:0.95rem; padding:0 2px; }
 
+
+  /* PAYMENT POPUP */
+  .popup-overlay { display:none; position:fixed; inset:0; background:rgba(10,20,10,0.75); z-index:1000; backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:20px; }
+  .popup-overlay.active { display:flex; animation:fadeInOverlay 0.25s ease; }
+  @keyframes fadeInOverlay { from{opacity:0} to{opacity:1} }
+  .popup-box { background:var(--warm-white); border-radius:22px; padding:36px 32px; max-width:420px; width:100%; position:relative; box-shadow:0 24px 64px rgba(0,0,0,0.35); animation:slideUp 0.3s ease; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  .popup-close { position:absolute; top:14px; right:16px; background:rgba(122,155,111,0.12); border:none; width:32px; height:32px; border-radius:50%; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--muted); transition:background 0.2s; line-height:1; }
+  .popup-close:hover { background:rgba(122,155,111,0.25); color:var(--dark); }
+  .popup-icon { font-size:2.8rem; text-align:center; margin-bottom:10px; display:block; }
+  .popup-title { font-family:'Playfair Display',serif; font-size:1.55rem; color:var(--forest); text-align:center; margin-bottom:6px; }
+  .popup-sub { font-size:0.85rem; color:var(--muted); text-align:center; line-height:1.6; margin-bottom:24px; }
+  .popup-btns { display:flex; flex-direction:column; gap:10px; }
+  .popup-btn { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-radius:14px; text-decoration:none; font-weight:600; font-size:0.9rem; transition:all 0.22s; border:none; cursor:pointer; width:100%; }
+  .popup-btn-cashapp { background:#00d632; color:#fff; }
+  .popup-btn-cashapp:hover { background:#00bb2b; transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,214,50,0.25); }
+  .popup-btn-venmo { background:#3d95ce; color:#fff; }
+  .popup-btn-venmo:hover { background:#2f7daf; transform:translateY(-2px); box-shadow:0 6px 20px rgba(61,149,206,0.25); }
+  .popup-btn-cash { background:var(--cream); color:var(--dark); border:1px solid var(--border); }
+  .popup-btn-cash:hover { background:#ede7d4; transform:translateY(-2px); }
+  .popup-btn-icon { font-size:1.3rem; }
+  .popup-btn-text { flex:1; text-align:left; margin-left:12px; }
+  .popup-btn-text span { display:block; font-size:0.72rem; font-weight:400; opacity:0.75; margin-top:1px; }
+  .popup-btn-arrow { font-size:0.9rem; opacity:0.6; }
+  .popup-divider { display:flex; align-items:center; gap:10px; margin:4px 0; }
+  .popup-divider::before,.popup-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .popup-divider span { font-size:0.72rem; color:#9aaa9a; }
   /* RESPONSIVE */
   @media (max-width:768px) {
     nav { padding:0 18px; height:56px; }
@@ -470,8 +497,8 @@
       <div class="booking-action">
         <h3>Ready to Book?</h3>
         <p>Select your walk length and pick a time. Confirms instantly to Kaz's Google Calendar.</p>
-        <a href="https://calendly.com/kazwalksdogs/30min" target="_blank" class="book-btn book-btn-primary">🐾 Book 30-Min Walk — $20</a>
-        <a href="https://calendly.com/kazwalksdogs/30-minute-walk-clone" target="_blank" class="book-btn book-btn-secondary">🌿 Book 60-Min Walk — $35</a>
+        <a href="https://calendly.com/kazwalksdogs/30min?redirect_url=https://kazwalksdogs.com?booked=true" target="_blank" class="book-btn book-btn-primary" onclick="sessionStorage.setItem('booked','1')">🐾 Book 30-Min Walk — $20</a>
+        <a href="https://calendly.com/kazwalksdogs/30-minute-walk-clone?redirect_url=https://kazwalksdogs.com?booked=true" target="_blank" class="book-btn book-btn-secondary" onclick="sessionStorage.setItem('booked','1')">🌿 Book 60-Min Walk — $35</a>
         <div class="pay-reminder">
           <span class="pay-reminder-title">Payment Options</span>
           <div class="pay-row"><span>💚 Cash App</span><span>$KazWalksDogs</span></div>
@@ -531,6 +558,35 @@
   <p class="footer-copy">© 2025 Kaz Walks Dogs. All rights reserved.</p>
 </footer>
 
+<!-- PAYMENT POPUP -->
+<div class="popup-overlay" id="payment-popup">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()" aria-label="Close">✕</button>
+    <span class="popup-icon">🎉</span>
+    <h3 class="popup-title">You're All Booked!</h3>
+    <p class="popup-sub">Thanks for scheduling with Kaz Walks Dogs! How would you like to take care of payment?</p>
+    <div class="popup-btns">
+      <a href="https://cash.app/$KazWalksDogs" target="_blank" class="popup-btn popup-btn-cashapp" onclick="closePopup()">
+        <span class="popup-btn-icon">💚</span>
+        <span class="popup-btn-text">Pay with Cash App<span>$KazWalksDogs</span></span>
+        <span class="popup-btn-arrow">→</span>
+      </a>
+      <a href="https://venmo.com/kazzz_333" target="_blank" class="popup-btn popup-btn-venmo" onclick="closePopup()">
+        <span class="popup-btn-icon">💙</span>
+        <span class="popup-btn-text">Pay with Venmo<span>@kazzz_333</span></span>
+        <span class="popup-btn-arrow">→</span>
+      </a>
+      <div class="popup-divider"><span>or</span></div>
+      <button class="popup-btn popup-btn-cash" onclick="closePopup()">
+        <span class="popup-btn-icon">💵</span>
+        <span class="popup-btn-text">Pay Cash Upon Arrival<span>No payment needed right now</span></span>
+        <span class="popup-btn-arrow">✓</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
 <div id="install-banner">
   <span>🐾 Add to your home screen</span>
   <button id="install-btn">Install</button>
@@ -567,6 +623,44 @@
   });
   document.getElementById('dismiss-banner').addEventListener('click', () => {
     document.getElementById('install-banner').style.display = 'none';
+  });
+
+  // Payment popup
+  function openPopup() {
+    document.getElementById('payment-popup').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePopup() {
+    document.getElementById('payment-popup').classList.remove('active');
+    document.body.style.overflow = '';
+    // Clear the flag
+    sessionStorage.removeItem('booked');
+    const url = new URL(window.location);
+    url.searchParams.delete('booked');
+    window.history.replaceState({}, '', url);
+  }
+
+  // Show popup if returning from Calendly
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('booked') === 'true' || sessionStorage.getItem('booked') === '1') {
+    setTimeout(openPopup, 800);
+  }
+
+  // Also listen for page focus (user returns from Calendly tab)
+  let bookingClicked = false;
+  document.querySelectorAll('.book-btn').forEach(btn => {
+    btn.addEventListener('click', () => { bookingClicked = true; });
+  });
+  window.addEventListener('focus', () => {
+    if (bookingClicked) {
+      bookingClicked = false;
+      setTimeout(openPopup, 600);
+    }
+  });
+
+  // Close popup when clicking overlay background
+  document.getElementById('payment-popup').addEventListener('click', function(e) {
+    if (e.target === this) closePopup();
   });
 </script>
 </body>
